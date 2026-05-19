@@ -1,11 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { io } from 'socket.io-client';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
+
+function ActualizarMapa({ posicion }) {
+  const map = useMap();
+  useEffect(() => {
+    if (posicion) map.setView(posicion, 15);
+  }, [posicion, map]);
+  return null;
+}
 
 function Tracking() {
   const { id } = useParams();
   const [estado, setEstado] = useState('pendiente');
   const [ubicacion, setUbicacion] = useState(null);
+  const [posicion, setPosicion] = useState([-33.4489, -70.6693]);
   const [eventos, setEventos] = useState([]);
 
   const pasos = [
@@ -23,8 +42,11 @@ function Tracking() {
       agregarEvento('Conectado al tracking del pedido', '🔗');
     });
     socket.on('ubicacion_actualizada', (data) => {
-      setUbicacion({ latitud: data.latitud, longitud: data.longitud });
-      agregarEvento(`Repartidor en: ${data.latitud}, ${data.longitud}`, '📍');
+      const lat = parseFloat(data.latitud);
+      const lng = parseFloat(data.longitud);
+      setUbicacion({ latitud: lat, longitud: lng });
+      setPosicion([lat, lng]);
+      agregarEvento(`Repartidor en: ${lat}, ${lng}`, '📍');
     });
     socket.on('estado_actualizado', (data) => {
       setEstado(data.estado);
@@ -87,21 +109,27 @@ function Tracking() {
           </div>
         </div>
 
-        {ubicacion && (
-          <div style={styles.card}>
-            <h3 style={styles.cardTitulo}>📍 Ubicación del repartidor</h3>
-            <div style={styles.ubicacionGrid}>
-              <div style={styles.coordCard}>
-                <div style={styles.coordLabel}>Latitud</div>
-                <div style={styles.coordValor}>{ubicacion.latitud}</div>
-              </div>
-              <div style={styles.coordCard}>
-                <div style={styles.coordLabel}>Longitud</div>
-                <div style={styles.coordValor}>{ubicacion.longitud}</div>
-              </div>
-            </div>
+        <div style={styles.mapaCard}>
+          <h3 style={styles.cardTitulo}>🗺️ Mapa en tiempo real</h3>
+          <div style={styles.mapaContainer}>
+            <MapContainer center={posicion} zoom={15} style={{ height: '100%', width: '100%', borderRadius: '8px' }}>
+              <TileLayer
+                attribution='&copy; OpenStreetMap'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <Marker position={posicion}>
+                <Popup>🏍️ Repartidor aquí</Popup>
+              </Marker>
+              <ActualizarMapa posicion={posicion} />
+            </MapContainer>
           </div>
-        )}
+          {ubicacion && (
+            <div style={styles.coordsRow}>
+              <span style={styles.coordItem}>📍 Lat: {ubicacion.latitud}</span>
+              <span style={styles.coordItem}>Lng: {ubicacion.longitud}</span>
+            </div>
+          )}
+        </div>
 
         <div style={styles.card}>
           <h3 style={styles.cardTitulo}>Actividad en tiempo real</h3>
@@ -138,7 +166,7 @@ const styles = {
   titulo: { fontSize: '24px', fontWeight: '700', color: '#f1f5f9', marginBottom: '4px' },
   subtitulo: { fontSize: '14px', color: '#64748b' },
   liveBadge: { display: 'flex', alignItems: 'center', gap: '8px', background: '#0a2d0a', border: '1px solid #14532d', color: '#4ade80', padding: '8px 14px', borderRadius: '20px', fontSize: '13px', fontWeight: '500' },
-  liveDot: { width: '8px', height: '8px', borderRadius: '50%', background: '#4ade80', display: 'inline-block', animation: 'pulse 2s infinite' },
+  liveDot: { width: '8px', height: '8px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' },
   card: { background: '#13151f', border: '1px solid #1e2130', borderRadius: '12px', padding: '24px', marginBottom: '16px' },
   cardTitulo: { fontSize: '15px', fontWeight: '600', color: '#f1f5f9', marginBottom: '20px' },
   pasos: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', position: 'relative' },
@@ -146,10 +174,10 @@ const styles = {
   pasoDot: { width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', zIndex: 1 },
   pasoLabel: { fontSize: '12px', textAlign: 'center' },
   pasoLinea: { position: 'absolute', top: '20px', left: '50%', width: '100%', height: '2px', zIndex: 0 },
-  ubicacionGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' },
-  coordCard: { background: '#0f1117', border: '1px solid #1e2130', borderRadius: '8px', padding: '16px' },
-  coordLabel: { fontSize: '12px', color: '#64748b', marginBottom: '4px' },
-  coordValor: { fontSize: '18px', fontWeight: '600', color: '#6c63ff' },
+  mapaCard: { background: '#13151f', border: '1px solid #1e2130', borderRadius: '12px', padding: '24px', marginBottom: '16px' },
+  mapaContainer: { height: '400px', borderRadius: '8px', overflow: 'hidden', marginBottom: '12px' },
+  coordsRow: { display: 'flex', gap: '20px' },
+  coordItem: { fontSize: '13px', color: '#64748b' },
   sinEventos: { textAlign: 'center', padding: '32px', color: '#64748b' },
   sinEventosIcon: { fontSize: '32px', marginBottom: '8px' },
   eventos: { display: 'flex', flexDirection: 'column', gap: '2px' },
