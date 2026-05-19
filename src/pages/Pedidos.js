@@ -71,7 +71,7 @@ function Pedidos() {
               <p style={styles.total}>Total: ${pedido.total.toLocaleString()}</p>
               <div style={styles.cardFooter}>
                 <span style={styles.fecha}>
-                  {new Date(pedido.fechaCreacion).toLocaleDateString()}
+                  {new Date(pedido.createdAt).toLocaleDateString()}
                 </span>
                 <Link to={`/tracking/${pedido.id}`} style={styles.botonTracking}>
                   Ver tracking
