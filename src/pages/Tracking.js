@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/Tracking.css';
+import axios from 'axios';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -35,6 +36,22 @@ function Tracking() {
     { key: 'en_camino',  label: 'En camino',  icon: '🚀' },
     { key: 'entregado',  label: 'Entregado',  icon: '🎉' }
   ];
+  useEffect(() => {
+  const cargarEstado = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`http://localhost:3000/api/pedidos/${id}`, {
+        headers: { authorization: token }
+      });
+      if (res.data.pedido) {
+        setEstado(res.data.pedido.estado);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  cargarEstado();
+}, [id]);
 
   useEffect(() => {
     const socket = io('http://localhost:3000');
