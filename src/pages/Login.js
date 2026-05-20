@@ -19,7 +19,9 @@ function Login() {
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('usuario', JSON.stringify(res.data.usuario));
       const rol = res.data.usuario.rol;
-      navigate(rol === 'admin' ? '/admin' : '/pedidos');
+      if (rol === 'admin') navigate('/admin');
+      else if (rol === 'repartidor') navigate('/repartidor');
+      else navigate('/pedidos');
     } catch (err) {
       setError('Email o contraseña incorrectos');
     } finally {

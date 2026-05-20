@@ -1,0 +1,244 @@
+@import './Pedidos.css';
+
+.rep-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fffe;
+}
+
+.rep-sidebar-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0 24px;
+  margin-bottom: 8px;
+}
+
+.rep-disponibilidad {
+  padding: 16px 24px;
+  border-top: 1.5px solid #e2f7f5;
+  border-bottom: 1.5px solid #e2f7f5;
+  margin: 16px 0;
+  text-align: center;
+}
+
+.rep-disp-label {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 10px;
+}
+
+.rep-disp-toggle {
+  width: 52px;
+  height: 28px;
+  background: #e2e8f0;
+  border-radius: 20px;
+  margin: 0 auto 8px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.3s;
+}
+
+.rep-disp-toggle.activo {
+  background: linear-gradient(135deg, #00C9B1, #00A896);
+}
+
+.rep-disp-dot {
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.rep-disp-toggle.activo .rep-disp-dot {
+  transform: translateX(24px);
+}
+
+.rep-disp-estado {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.rep-main {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+}
+
+.rep-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.rep-titulo {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+
+.rep-subtitulo {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.btn-ubicacion {
+  background: #ffffff;
+  border: 1.5px solid #00C9B1;
+  color: #00A896;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-ubicacion:hover {
+  background: #e6faf8;
+}
+
+.rep-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.rep-stat {
+  background: #ffffff;
+  border: 1.5px solid #e2f7f5;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,201,177,0.06);
+}
+
+.rep-stat-num {
+  font-size: 36px;
+  font-weight: 800;
+  color: #00A896;
+  margin-bottom: 4px;
+}
+
+.rep-stat-label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.rep-seccion-titulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 16px;
+}
+
+.rep-vacio {
+  text-align: center;
+  padding: 60px 40px;
+  color: #64748b;
+  background: #ffffff;
+  border: 1.5px solid #e2f7f5;
+  border-radius: 14px;
+}
+
+.rep-vacio-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.rep-vacio h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+}
+
+.rep-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.rep-card {
+  background: #ffffff;
+  border: 1.5px solid #e2f7f5;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,201,177,0.06);
+  transition: all 0.2s;
+}
+
+.rep-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,201,177,0.12);
+  border-color: #00C9B1;
+}
+
+.rep-card-completado {
+  opacity: 0.7;
+}
+
+.rep-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.rep-card-id {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.rep-card-estado {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+.rep-card-body {
+  margin-bottom: 16px;
+}
+
+.rep-info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.btn-accion {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #00C9B1, #00A896);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(0,201,177,0.25);
+}
+
+.btn-accion:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,201,177,0.35);
+}

@@ -6,6 +6,7 @@ import Pedidos from './pages/Pedidos';
 import NuevoPedido from './pages/NuevoPedido';
 import Tracking from './pages/Tracking';
 import Admin from './pages/Admin';
+import Repartidor from './pages/Repartidor';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/nuevo-pedido" element={<NuevoPedido />} />
         <Route path="/tracking/:id" element={<Tracking />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/repartidor" element={<Repartidor />} />
       </Routes>
     </Router>
   );
