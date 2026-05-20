@@ -24,8 +24,8 @@ function Admin() {
   const cargarDatos = async () => {
     try {
       const [pedidosRes, repartidoresRes] = await Promise.all([
-        axios.get('http://localhost:3000/api/pedidos', { headers: { authorization: token } }),
-        axios.get('http://localhost:3000/api/repartidores', { headers: { authorization: token } })
+        axios.get('https://tiptop-vocalist-scope.ngrok-free.dev/api/pedidos', { headers: { authorization: token } }),
+        axios.get('https://tiptop-vocalist-scope.ngrok-free.dev/api/repartidores', { headers: { authorization: token } })
       ]);
       const p = pedidosRes.data.pedidos;
       setPedidos(p);
@@ -43,7 +43,7 @@ function Admin() {
 
   const cambiarEstado = async (pedidoId, estado) => {
     try {
-      await axios.put(`http://localhost:3000/api/pedidos/${pedidoId}/estado`,
+      await axios.put(`https://tiptop-vocalist-scope.ngrok-free.dev/api/pedidos/${pedidoId}/estado`,
         { estado },
         { headers: { authorization: token } }
       );
@@ -57,14 +57,14 @@ function Admin() {
     e.preventDefault();
     setLoadingRep(true);
     try {
-      await axios.post('http://localhost:3000/api/auth/registro', {
+      await axios.post('https://tiptop-vocalist-scope.ngrok-free.dev/api/auth/registro', {
         nombre: nuevoRep.nombre,
         email: nuevoRep.email,
         password: nuevoRep.password,
         rol: 'repartidor'
       }, { headers: { authorization: token } });
 
-      await axios.post('http://localhost:3000/api/repartidores', {
+      await axios.post('https://tiptop-vocalist-scope.ngrok-free.dev/api/repartidores', {
         nombre: nuevoRep.nombre,
         email: nuevoRep.email,
         telefono: nuevoRep.telefono,

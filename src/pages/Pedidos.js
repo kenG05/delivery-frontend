@@ -17,7 +17,7 @@ function Pedidos() {
 
   const cargarPedidos = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/pedidos', {
+      const res = await axios.get('https://tiptop-vocalist-scope.ngrok-free.dev/api/pedidos', {
         headers: { authorization: token }
       });
       setPedidos(res.data.pedidos);

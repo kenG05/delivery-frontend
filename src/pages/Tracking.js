@@ -40,7 +40,7 @@ function Tracking() {
   const cargarEstado = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`http://localhost:3000/api/pedidos/${id}`, {
+      const res = await axios.get(`https://tiptop-vocalist-scope.ngrok-free.dev/api/pedidos/${id}`, {
         headers: { authorization: token }
       });
       if (res.data.pedido) {
@@ -54,7 +54,7 @@ function Tracking() {
 }, [id]);
 
   useEffect(() => {
-    const socket = io('http://localhost:3000');
+    const socket = io('https://tiptop-vocalist-scope.ngrok-free.dev');
     socket.on('connect', () => {
       socket.emit('unirse_pedido', parseInt(id));
       agregarEvento('Conectado al tracking del pedido', '🔗');

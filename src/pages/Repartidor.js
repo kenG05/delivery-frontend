@@ -16,7 +16,7 @@ function Repartidor() {
     if (!token || usuario.rol !== 'repartidor') { navigate('/'); return; }
     cargarPedidos();
 
-    const s = io('http://localhost:3000');
+    const s = io('https://tiptop-vocalist-scope.ngrok-free.dev');
     s.on('connect', () => console.log('Repartidor conectado'));
     setSocket(s);
     return () => s.disconnect();
@@ -24,7 +24,7 @@ function Repartidor() {
 
   const cargarPedidos = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/pedidos', {
+      const res = await axios.get('https://tiptop-vocalist-scope.ngrok-free.dev/api/pedidos', {
         headers: { authorization: token }
       });
       setPedidos(res.data.pedidos);
@@ -35,7 +35,7 @@ function Repartidor() {
 
   const cambiarEstado = async (pedidoId, estado) => {
     try {
-      await axios.put(`http://localhost:3000/api/pedidos/${pedidoId}/estado`,
+      await axios.put(`https://tiptop-vocalist-scope.ngrok-free.dev/api/pedidos/${pedidoId}/estado`,
         { estado },
         { headers: { authorization: token } }
       );
@@ -104,7 +104,7 @@ function Repartidor() {
             const nuevoEstado = !disponible;
             setDisponible(nuevoEstado);
             try {
-                await axios.put(`http://localhost:3000/api/repartidores/${usuario.id}/disponibilidad`,
+                await axios.put(`https://tiptop-vocalist-scope.ngrok-free.dev/api/repartidores/${usuario.id}/disponibilidad`,
                 { disponible: nuevoEstado },
                 { headers: { authorization: token } }
                 );
