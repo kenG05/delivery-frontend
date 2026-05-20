@@ -100,7 +100,18 @@ function Repartidor() {
           <p className="rep-disp-label">Mi disponibilidad</p>
           <div
             className={`rep-disp-toggle ${disponible ? 'activo' : ''}`}
-            onClick={() => setDisponible(!disponible)}
+            onClick={async () => {
+            const nuevoEstado = !disponible;
+            setDisponible(nuevoEstado);
+            try {
+                await axios.put(`http://localhost:3000/api/repartidores/${usuario.id}/disponibilidad`,
+                { disponible: nuevoEstado },
+                { headers: { authorization: token } }
+                );
+            } catch (err) {
+                console.error('Error actualizando disponibilidad');
+            }
+            }}
           >
             <div className="rep-disp-dot"></div>
           </div>
