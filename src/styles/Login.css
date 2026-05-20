@@ -310,3 +310,30 @@ body {
   padding: 0;
   line-height: 1;
 }
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .login-left {
+    padding: 40px 24px;
+    min-height: 280px;
+  }
+
+  .login-brand {
+    font-size: 36px;
+  }
+
+  .login-tagline {
+    font-size: 15px;
+  }
+
+  .login-features {
+    display: none;
+  }
+
+  .login-right {
+    width: 100%;
+    padding: 32px 24px;
+  }
+}
