@@ -206,3 +206,77 @@
   color: #94a3b8;
   font-size: 14px;
 }
+.rep-acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.btn-nuevo-rep {
+  background: linear-gradient(135deg, #00C9B1, #00A896);
+  color: white;
+  border: none;
+  padding: 11px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,201,177,0.25);
+  transition: all 0.2s;
+}
+
+.btn-nuevo-rep:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,201,177,0.35);
+}
+
+.form-rep-card {
+  background: #ffffff;
+  border: 1.5px solid #e2f7f5;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0,201,177,0.08);
+}
+
+.form-rep-titulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 20px;
+}
+
+.form-rep-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.form-rep-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.btn-confirmar-rep {
+  background: linear-gradient(135deg, #00C9B1, #00A896);
+  color: white;
+  border: none;
+  padding: 13px 32px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,201,177,0.25);
+  transition: all 0.2s;
+}
+
+.btn-confirmar-rep:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,201,177,0.35);
+}

@@ -7,6 +7,10 @@ function Admin() {
   const [pedidos, setPedidos] = useState([]);
   const [repartidores, setRepartidores] = useState([]);
   const [vista, setVista] = useState('pedidos');
+  const [mostrarFormRep, setMostrarFormRep] = useState(false);
+  const [nuevoRep, setNuevoRep] = useState({ nombre: '', email: '', password: '', telefono: '', vehiculo: 'moto' });
+  const [errorRep, setErrorRep] = useState('');
+  const [loadingRep, setLoadingRep] = useState(false);
   const [stats, setStats] = useState({ total: 0, pendientes: 0, enCamino: 0, entregados: 0 });
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -49,6 +53,35 @@ function Admin() {
     }
   };
 
+  const registrarRepartidor = async (e) => {
+    e.preventDefault();
+    setLoadingRep(true);
+    try {
+      await axios.post('http://localhost:3000/api/auth/registro', {
+        nombre: nuevoRep.nombre,
+        email: nuevoRep.email,
+        password: nuevoRep.password,
+        rol: 'repartidor'
+      }, { headers: { authorization: token } });
+
+      await axios.post('http://localhost:3000/api/repartidores', {
+        nombre: nuevoRep.nombre,
+        email: nuevoRep.email,
+        telefono: nuevoRep.telefono,
+        vehiculo: nuevoRep.vehiculo
+      }, { headers: { authorization: token } });
+
+      setNuevoRep({ nombre: '', email: '', password: '', telefono: '', vehiculo: 'moto' });
+      setMostrarFormRep(false);
+      setErrorRep('');
+      cargarDatos();
+    } catch (err) {
+      setErrorRep('Error al registrar repartidor');
+    } finally {
+      setLoadingRep(false);
+    }
+  };
+
   const cerrarSesion = () => { localStorage.clear(); navigate('/'); };
 
   const colores = {
@@ -61,10 +94,10 @@ function Admin() {
   };
 
   const statsConfig = [
-    { label: 'Total pedidos', valor: stats.total,      icon: '📦', color: '#00A896' },
-    { label: 'Pendientes',    valor: stats.pendientes,  icon: '⏳', color: '#D97706' },
-    { label: 'En camino',     valor: stats.enCamino,    icon: '🚀', color: '#2563EB' },
-    { label: 'Entregados',    valor: stats.entregados,  icon: '✅', color: '#16A34A' }
+    { label: 'Total pedidos', valor: stats.total,     icon: '📦', color: '#00A896' },
+    { label: 'Pendientes',    valor: stats.pendientes, icon: '⏳', color: '#D97706' },
+    { label: 'En camino',     valor: stats.enCamino,   icon: '🚀', color: '#2563EB' },
+    { label: 'Entregados',    valor: stats.entregados, icon: '✅', color: '#16A34A' }
   ];
 
   return (
@@ -151,31 +184,78 @@ function Admin() {
         )}
 
         {vista === 'repartidores' && (
-          <div className="admin-tabla">
-            <div className="tabla-header tabla-header-rep">
-              <span>ID</span>
-              <span>Nombre</span>
-              <span>Teléfono</span>
-              <span>Vehículo</span>
-              <span>Estado</span>
+          <>
+            <div className="rep-acciones">
+              <button className="btn-nuevo-rep" onClick={() => setMostrarFormRep(!mostrarFormRep)}>
+                {mostrarFormRep ? '✕ Cancelar' : '+ Agregar repartidor'}
+              </button>
             </div>
-            {repartidores.length === 0 && <p className="tabla-vacio">No hay repartidores registrados</p>}
-            {repartidores.map(r => (
-              <div key={r.id} className="tabla-fila tabla-fila-rep">
-                <span className="tabla-id">#{r.id}</span>
-                <span className="tabla-celda">{r.nombre}</span>
-                <span className="tabla-celda">{r.telefono}</span>
-                <span className="tabla-celda">{r.vehiculo}</span>
-                <span className="tabla-estado" style={{
-                  background: r.disponible ? '#F0FDF4' : '#FEF2F2',
-                  color: r.disponible ? '#16A34A' : '#DC2626',
-                  border: `1px solid ${r.disponible ? '#BBF7D0' : '#FECACA'}`
-                }}>
-                  {r.disponible ? '✅ Disponible' : '🔴 Ocupado'}
-                </span>
+
+            {mostrarFormRep && (
+              <div className="form-rep-card">
+                <h3 className="form-rep-titulo">Registrar nuevo repartidor</h3>
+                {errorRep && <div className="form-rep-error">{errorRep}</div>}
+                <form onSubmit={registrarRepartidor}>
+                  <div className="form-rep-grid">
+                    <div className="form-grupo">
+                      <label className="form-label">Nombre completo</label>
+                      <input className="form-input" placeholder="Nombre" value={nuevoRep.nombre} onChange={e => setNuevoRep({...nuevoRep, nombre: e.target.value})} required />
+                    </div>
+                    <div className="form-grupo">
+                      <label className="form-label">Email</label>
+                      <input className="form-input" type="email" placeholder="email@zippi.com" value={nuevoRep.email} onChange={e => setNuevoRep({...nuevoRep, email: e.target.value})} required />
+                    </div>
+                    <div className="form-grupo">
+                      <label className="form-label">Contraseña</label>
+                      <input className="form-input" type="password" placeholder="••••••••" value={nuevoRep.password} onChange={e => setNuevoRep({...nuevoRep, password: e.target.value})} required />
+                    </div>
+                    <div className="form-grupo">
+                      <label className="form-label">Teléfono</label>
+                      <input className="form-input" placeholder="+56912345678" value={nuevoRep.telefono} onChange={e => setNuevoRep({...nuevoRep, telefono: e.target.value})} required />
+                    </div>
+                    <div className="form-grupo">
+                      <label className="form-label">Vehículo</label>
+                      <select className="form-input" value={nuevoRep.vehiculo} onChange={e => setNuevoRep({...nuevoRep, vehiculo: e.target.value})}>
+                        <option value="moto">🏍️ Moto</option>
+                        <option value="bicicleta">🚲 Bicicleta</option>
+                        <option value="auto">🚗 Auto</option>
+                        <option value="a pie">🚶 A pie</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button type="submit" className={loadingRep ? 'btn-loading' : 'btn-confirmar-rep'} disabled={loadingRep}>
+                    {loadingRep ? 'Registrando...' : '✓ Registrar repartidor'}
+                  </button>
+                </form>
               </div>
-            ))}
-          </div>
+            )}
+
+            <div className="admin-tabla">
+              <div className="tabla-header tabla-header-rep">
+                <span>ID</span>
+                <span>Nombre</span>
+                <span>Teléfono</span>
+                <span>Vehículo</span>
+                <span>Estado</span>
+              </div>
+              {repartidores.length === 0 && <p className="tabla-vacio">No hay repartidores registrados</p>}
+              {repartidores.map(r => (
+                <div key={r.id} className="tabla-fila tabla-fila-rep">
+                  <span className="tabla-id">#{r.id}</span>
+                  <span className="tabla-celda">{r.nombre}</span>
+                  <span className="tabla-celda">{r.telefono}</span>
+                  <span className="tabla-celda">{r.vehiculo}</span>
+                  <span className="tabla-estado" style={{
+                    background: r.disponible ? '#F0FDF4' : '#FEF2F2',
+                    color: r.disponible ? '#16A34A' : '#DC2626',
+                    border: `1px solid ${r.disponible ? '#BBF7D0' : '#FECACA'}`
+                  }}>
+                    {r.disponible ? '✅ Disponible' : '🔴 Ocupado'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
