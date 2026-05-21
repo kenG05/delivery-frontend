@@ -6,7 +6,54 @@ import '../styles/Admin.css';
 function Admin() {
   const [pedidos, setPedidos] = useState([]);
   const [repartidores, setRepartidores] = useState([]);
+  const cargarProductos = async () => {
+  try {
+    const res = await axios.get('http://localhost:3000/api/productos/todos', { headers: { authorization: token } });
+    setProductos(res.data.productos);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const crearProducto = async (e) => {
+  e.preventDefault();
+  setLoadingProducto(true);
+  try {
+    await axios.post('http://localhost:3000/api/productos', {
+      nombre: nuevoProducto.nombre,
+      descripcion: nuevoProducto.descripcion,
+      precio: parseFloat(nuevoProducto.precio),
+      categoria: nuevoProducto.categoria,
+      imagen: nuevoProducto.imagen
+    }, { headers: { authorization: token } });
+    setNuevoProducto({ nombre: '', descripcion: '', precio: '', categoria: '', imagen: '' });
+    setMostrarFormProducto(false);
+    setErrorProducto('');
+    cargarProductos();
+  } catch (err) {
+    setErrorProducto('Error al crear producto');
+  } finally {
+    setLoadingProducto(false);
+  }
+};
+
+const toggleProducto = async (productoId, disponible) => {
+  try {
+    await axios.put(`http://localhost:3000/api/productos/${productoId}`,
+      { disponible: !disponible },
+      { headers: { authorization: token } }
+    );
+    cargarProductos();
+  } catch (err) {
+    console.error(err);
+  }
+};
   const [vista, setVista] = useState('pedidos');
+  const [productos, setProductos] = useState([]);
+  const [mostrarFormProducto, setMostrarFormProducto] = useState(false);
+  const [nuevoProducto, setNuevoProducto] = useState({ nombre: '', descripcion: '', precio: '', categoria: '', imagen: '' });
+  const [errorProducto, setErrorProducto] = useState('');
+  const [loadingProducto, setLoadingProducto] = useState(false);
   const [mostrarFormRep, setMostrarFormRep] = useState(false);
   const [nuevoRep, setNuevoRep] = useState({ nombre: '', email: '', password: '', telefono: '', vehiculo: 'moto' });
   const [errorRep, setErrorRep] = useState('');
@@ -16,16 +63,20 @@ function Admin() {
   const token = localStorage.getItem('token');
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
 
-  useEffect(() => {
-    if (!token || usuario.rol !== 'admin') { navigate('/'); return; }
-    cargarDatos();
-  }, []);
+ useEffect(() => {
+  if (!token || usuario.rol !== 'admin') { navigate('/'); return; }
+  cargarDatos();
+}, []);
+
+useEffect(() => {
+  if (vista === 'productos') cargarProductos();
+}, [vista]);
 
   const cargarDatos = async () => {
     try {
       const [pedidosRes, repartidoresRes] = await Promise.all([
-        axios.get('https://tiptop-vocalist-scope.ngrok-free.dev/api/pedidos', { headers: { authorization: token } }),
-        axios.get('https://tiptop-vocalist-scope.ngrok-free.dev/api/repartidores', { headers: { authorization: token } })
+        axios.get('http://localhost:3000/api/pedidos', { headers: { authorization: token } }),
+        axios.get('http://localhost:3000/api/repartidores', { headers: { authorization: token } })
       ]);
       const p = pedidosRes.data.pedidos;
       setPedidos(p);
@@ -43,7 +94,7 @@ function Admin() {
 
   const cambiarEstado = async (pedidoId, estado) => {
     try {
-      await axios.put(`https://tiptop-vocalist-scope.ngrok-free.dev/api/pedidos/${pedidoId}/estado`,
+      await axios.put(`http://localhost:3000/api/pedidos/${pedidoId}/estado`,
         { estado },
         { headers: { authorization: token } }
       );
@@ -57,14 +108,14 @@ function Admin() {
     e.preventDefault();
     setLoadingRep(true);
     try {
-      await axios.post('https://tiptop-vocalist-scope.ngrok-free.dev/api/auth/registro', {
+      await axios.post('http://localhost:3000/api/auth/registro', {
         nombre: nuevoRep.nombre,
         email: nuevoRep.email,
         password: nuevoRep.password,
         rol: 'repartidor'
       }, { headers: { authorization: token } });
 
-      await axios.post('https://tiptop-vocalist-scope.ngrok-free.dev/api/repartidores', {
+      await axios.post('http://localhost:3000/api/repartidores', {
         nombre: nuevoRep.nombre,
         email: nuevoRep.email,
         telefono: nuevoRep.telefono,
@@ -112,9 +163,11 @@ function Admin() {
           <div className={`sidebar-nav-item ${vista === 'pedidos' ? 'activo' : ''}`} onClick={() => setVista('pedidos')}>
             <span>📦</span> Pedidos
           </div>
-          <div className={`sidebar-nav-item ${vista === 'repartidores' ? 'activo' : ''}`} onClick={() => setVista('repartidores')}>
-            <span>🏍️</span> Repartidores
-          </div>
+       
+        <div className={`sidebar-nav-item ${vista === 'productos' ? 'activo' : ''}`} onClick={() => setVista('productos')}>
+        <span>🍽️</span> Productos
+        </div>
+        
         </nav>
         <div className="sidebar-footer">
           <div className="sidebar-usuario">
@@ -145,6 +198,83 @@ function Admin() {
               <div className="stat-label">{s.label}</div>
             </div>
           ))}
+          {vista === 'productos' && (
+  <>
+    <div className="rep-acciones">
+      <button className="btn-nuevo-rep" onClick={() => setMostrarFormProducto(!mostrarFormProducto)}>
+        {mostrarFormProducto ? '✕ Cancelar' : '+ Agregar producto'}
+      </button>
+    </div>
+
+    {mostrarFormProducto && (
+      <div className="form-rep-card">
+        <h3 className="form-rep-titulo">Agregar nuevo producto</h3>
+        {errorProducto && <div className="form-rep-error">{errorProducto}</div>}
+        <form onSubmit={crearProducto}>
+          <div className="form-rep-grid">
+            <div className="form-grupo">
+              <label className="form-label">Nombre</label>
+              <input className="form-input" placeholder="Ej: Pizza Margherita" value={nuevoProducto.nombre} onChange={e => setNuevoProducto({...nuevoProducto, nombre: e.target.value})} required />
+            </div>
+            <div className="form-grupo">
+              <label className="form-label">Categoría</label>
+              <input className="form-input" placeholder="Ej: Pizzas, Bebidas" value={nuevoProducto.categoria} onChange={e => setNuevoProducto({...nuevoProducto, categoria: e.target.value})} />
+            </div>
+            <div className="form-grupo">
+              <label className="form-label">Precio</label>
+              <input className="form-input" type="number" placeholder="0" value={nuevoProducto.precio} onChange={e => setNuevoProducto({...nuevoProducto, precio: e.target.value})} required />
+            </div>
+            <div className="form-grupo">
+              <label className="form-label">URL de imagen</label>
+              <input className="form-input" placeholder="https://..." value={nuevoProducto.imagen} onChange={e => setNuevoProducto({...nuevoProducto, imagen: e.target.value})} />
+            </div>
+            <div className="form-grupo" style={{ gridColumn: '1 / -1' }}>
+              <label className="form-label">Descripción</label>
+              <input className="form-input" placeholder="Describe el producto" value={nuevoProducto.descripcion} onChange={e => setNuevoProducto({...nuevoProducto, descripcion: e.target.value})} />
+            </div>
+          </div>
+          <button type="submit" className={loadingProducto ? 'btn-loading' : 'btn-confirmar-rep'} disabled={loadingProducto}>
+            {loadingProducto ? 'Guardando...' : '✓ Guardar producto'}
+          </button>
+        </form>
+      </div>
+    )}
+
+    <div className="admin-tabla">
+      <div className="tabla-header" style={{ gridTemplateColumns: '60px 1fr 1fr 100px 120px 100px' }}>
+        <span>ID</span>
+        <span>Nombre</span>
+        <span>Categoría</span>
+        <span>Precio</span>
+        <span>Estado</span>
+        <span>Acción</span>
+      </div>
+      {productos.length === 0 && <p className="tabla-vacio">No hay productos aún</p>}
+      {productos.map(producto => (
+        <div key={producto.id} className="tabla-fila" style={{ gridTemplateColumns: '60px 1fr 1fr 100px 120px 100px' }}>
+          <span className="tabla-id">#{producto.id}</span>
+          <span className="tabla-celda">{producto.nombre}</span>
+          <span className="tabla-celda">{producto.categoria || '—'}</span>
+          <span className="tabla-celda tabla-total">${producto.precio.toLocaleString()}</span>
+          <span className="tabla-estado" style={{
+            background: producto.disponible ? '#F0FDF4' : '#FEF2F2',
+            color: producto.disponible ? '#16A34A' : '#DC2626',
+            border: `1px solid ${producto.disponible ? '#BBF7D0' : '#FECACA'}`
+          }}>
+            {producto.disponible ? '✅ Activo' : '🔴 Inactivo'}
+          </span>
+          <button
+            className="tabla-select"
+            onClick={() => toggleProducto(producto.id, producto.disponible)}
+            style={{ cursor: 'pointer' }}
+          >
+            {producto.disponible ? 'Desactivar' : 'Activar'}
+          </button>
+        </div>
+      ))}
+    </div>
+  </>
+)}
         </div>
 
         {vista === 'pedidos' && (

@@ -25,7 +25,7 @@ function NuevoPedido() {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('https://tiptop-vocalist-scope.ngrok-free.dev/api/pedidos', {
+      await axios.post('http://localhost:3000/api/pedidos', {
         productos: productos.map(p => ({ nombre: p.nombre, precio: parseFloat(p.precio), cantidad: parseInt(p.cantidad) })),
         direccionEntrega: direccion,
         metodoPago

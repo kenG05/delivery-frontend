@@ -17,7 +17,7 @@ function Pedidos() {
 
   const cargarPedidos = async () => {
     try {
-      const res = await axios.get('https://tiptop-vocalist-scope.ngrok-free.dev/api/pedidos', {
+      const res = await axios.get('http://localhost:3000/api/pedidos', {
         headers: { authorization: token }
       });
       setPedidos(res.data.pedidos);
@@ -48,8 +48,8 @@ function Pedidos() {
           <div className="sidebar-nav-item activo">
             <span>📦</span> Mis Pedidos
           </div>
-          <div className="sidebar-nav-item" onClick={() => navigate('/nuevo-pedido')}>
-            <span>➕</span> Nuevo Pedido
+          <div className="sidebar-nav-item" onClick={() => navigate('/catalogo')}>
+            <span>🍽️</span> Catálogo
           </div>
         </nav>
         <div className="sidebar-footer">
@@ -70,7 +70,7 @@ function Pedidos() {
             <h1 className="pedidos-titulo">Mis Pedidos</h1>
             <p className="pedidos-subtitulo">Gestiona y sigue tus pedidos en tiempo real</p>
           </div>
-          <Link to="/nuevo-pedido" className="btn-nuevo-pedido">+ Nuevo Pedido</Link>
+          <Link to="/catalogo" className="btn-nuevo-pedido">🍽️ Ver catálogo</Link>
         </div>
 
         {error && <div className="pedidos-error">{error}</div>}
@@ -80,7 +80,7 @@ function Pedidos() {
             <div className="pedidos-vacio-icon">📭</div>
             <h3>No tienes pedidos aún</h3>
             <p>Haz tu primer pedido y aparecerá aquí</p>
-            <Link to="/nuevo-pedido" className="btn-nuevo-pedido">Hacer mi primer pedido</Link>
+            <Link to="/catalogo" className="btn-nuevo-pedido">Hacer mi primer pedido</Link>
           </div>
         ) : (
           <div className="pedidos-grid">
